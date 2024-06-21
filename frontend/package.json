@@ -1,0 +1,20 @@
+{
+  "name": "my-frontend-app",
+  "version": "1.0.0",
+  "description": "Frontend application using http-server and open",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -o",
+    "http-server": "http-server",
+    "open": "open http://localhost:8080" 
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "open": "^10.1.0"
+  }
+}
