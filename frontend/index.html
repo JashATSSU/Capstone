@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Frontend App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Ski Resort Search</title>
 </head>
 <body>
-    <h1>Hello, Frontend!</h1>
-    <p>Welcome to my frontend application.</p>
+    <h1>Ski Resort Search</h1>
+    <form id="searchForm">
+        <label for="mountainName">Enter Mountain Name:</label>
+        <input type="text" id="mountainName" name="mountainName" required>
+        <button type="submit">Search</button>
+    </form>
+    <div id="resortData"></div>
 
-    <script src="script.js"></script>
+    <script src="frontend.js"></script>
 </body>
 </html>
