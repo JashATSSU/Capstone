@@ -1,0 +1,16 @@
+.resort-details {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .resort-details h2 {
+    margin-top: 0;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+  
