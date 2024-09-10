@@ -51,7 +51,7 @@ function App() {
 
   const handleResortClick = (resort) => {
     setSelectedResort(resort);
-    navigate(`/resort/${resort.id}`);
+    navigate(`/resort/${resort.id}`); // Ensure resort.id is the correct identifier
   };
 
   return (

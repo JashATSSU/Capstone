@@ -35,7 +35,7 @@ const upload = multer({
 app.use(cors());
 app.use(express.json());
 
-// Register Route
+// API Routes
 app.post('/api/auth/register', async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
@@ -46,7 +46,6 @@ app.post('/api/auth/register', async (req, res) => {
   res.status(201).send('User registered');
 });
 
-// Login Route
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   
@@ -64,7 +63,6 @@ app.post('/api/auth/login', (req, res) => {
   }
 });
 
-// Middleware to verify JWT
 const authenticateJWT = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
   
@@ -79,12 +77,10 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-// AWS S3 Upload Route
 app.post('/api/upload', authenticateJWT, upload.single('file'), (req, res) => {
   res.json({ fileUrl: req.file.location });
 });
 
-// Fetch all resorts and filter for New England resorts
 app.get('/api/ski-resorts', async (req, res) => {
   try {
     const response = await axios.get('https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort', {
@@ -105,7 +101,6 @@ app.get('/api/ski-resorts', async (req, res) => {
   }
 });
 
-// Fetch additional details for a specific resort
 app.get('/api/ski-resorts/:slug', async (req, res) => {
   const { slug } = req.params;
   try {
@@ -133,6 +128,15 @@ app.get('/api/ski-resorts/:slug', async (req, res) => {
   } catch (error) {
     console.error('Error fetching resort details:', error.response ? error.response.data : error.message);
     res.status(500).json({ message: 'Error fetching resort details' });
+  }
+});
+
+// Middleware to proxy API requests to React Development Server
+app.use((req, res, next) => {
+  if (req.headers['accept'] && req.headers['accept'].includes('text/html')) {
+    res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
+  } else {
+    next();
   }
 });
 
