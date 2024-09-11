@@ -39,19 +39,19 @@ app.use(express.json());
 app.post('/api/auth/register', async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
-  
+
   // Replace with actual database logic
   // Here you should save the user to the database
-  
+
   res.status(201).send('User registered');
 });
 
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
-  
+
   // Replace with actual user fetching logic from the database
   // Here you should fetch the user and compare passwords
-  
+
   // Example user object
   const user = { email: 'user@example.com', password: bcrypt.hashSync('password', 8) };
 
@@ -65,7 +65,7 @@ app.post('/api/auth/login', (req, res) => {
 
 const authenticateJWT = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
-  
+
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) return res.sendStatus(403);
@@ -81,17 +81,21 @@ app.post('/api/upload', authenticateJWT, upload.single('file'), (req, res) => {
   res.json({ fileUrl: req.file.location });
 });
 
+// Fetch New England Ski Resorts
 app.get('/api/ski-resorts', async (req, res) => {
   try {
-    const response = await axios.get('https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort', {
+    const options = {
+      method: 'GET',
+      url: 'https://ski-resorts-and-conditions.p.rapidapi.com/v1/resorts',
       headers: {
         'x-rapidapi-key': process.env.RAPIDAPI_KEY,
-        'x-rapidapi-host': 'ski-resorts-and-conditions.p.rapidapi.com'
-      }
-    });
+        'x-rapidapi-host': process.env.RAPIDAPI_HOST,
+      },
+    };
 
-    const newEnglandResorts = response.data.filter(resort =>
-      ["NH", "VT", "ME", "MA", "CT"].includes(resort.region)
+    const response = await axios.request(options);
+    const newEnglandResorts = response.data.filter((resort) =>
+      ['NH', 'VT', 'ME', 'MA', 'CT'].includes(resort.region)
     );
 
     res.json(newEnglandResorts);
@@ -101,29 +105,52 @@ app.get('/api/ski-resorts', async (req, res) => {
   }
 });
 
+// Fetch Specific Ski Resort Details
 app.get('/api/ski-resorts/:slug', async (req, res) => {
   const { slug } = req.params;
   try {
+    const options = {
+      method: 'GET',
+      url: `https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort/${slug}`,
+      headers: {
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY,
+        'x-rapidapi-host': process.env.RAPIDAPI_HOST,
+      },
+    };
+
     const [resortResponse, liftStatusResponse, weatherResponse, snowConditionsResponse] = await Promise.all([
-      axios.get(`https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort/${slug}`, {
-        headers: { 'x-rapidapi-key': process.env.RAPIDAPI_KEY, 'x-rapidapi-host': 'ski-resorts-and-conditions.p.rapidapi.com' }
+      axios.request(options),
+      axios.request({
+        method: 'GET',
+        url: `https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort/${slug}/lifts`,
+        headers: {
+          'x-rapidapi-key': process.env.RAPIDAPI_KEY,
+          'x-rapidapi-host': process.env.RAPIDAPI_HOST,
+        },
       }),
-      axios.get(`https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort/${slug}/lifts`, {
-        headers: { 'x-rapidapi-key': process.env.RAPIDAPI_KEY, 'x-rapidapi-host': 'ski-resorts-and-conditions.p.rapidapi.com' }
+      axios.request({
+        method: 'GET',
+        url: `https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort/${slug}/weather`,
+        headers: {
+          'x-rapidapi-key': process.env.RAPIDAPI_KEY,
+          'x-rapidapi-host': process.env.RAPIDAPI_HOST,
+        },
       }),
-      axios.get(`https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort/${slug}/weather`, {
-        headers: { 'x-rapidapi-key': process.env.RAPIDAPI_KEY, 'x-rapidapi-host': 'ski-resorts-and-conditions.p.rapidapi.com' }
+      axios.request({
+        method: 'GET',
+        url: `https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort/${slug}/snow`,
+        headers: {
+          'x-rapidapi-key': process.env.RAPIDAPI_KEY,
+          'x-rapidapi-host': process.env.RAPIDAPI_HOST,
+        },
       }),
-      axios.get(`https://ski-resorts-and-conditions.p.rapidapi.com/v1/resort/${slug}/snow`, {
-        headers: { 'x-rapidapi-key': process.env.RAPIDAPI_KEY, 'x-rapidapi-host': 'ski-resorts-and-conditions.p.rapidapi.com' }
-      })
     ]);
 
     res.json({
       resort: resortResponse.data,
       liftStatus: liftStatusResponse.data,
       weather: weatherResponse.data,
-      snowConditions: snowConditionsResponse.data
+      snowConditions: snowConditionsResponse.data,
     });
   } catch (error) {
     console.error('Error fetching resort details:', error.response ? error.response.data : error.message);

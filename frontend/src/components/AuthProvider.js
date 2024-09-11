@@ -1,21 +1,31 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
+// Create a context for authentication
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate();
 
-  const login = async (email, password) => {
-    // Add your login logic here
+  // Simulate authentication status
+  useEffect(() => {
+    // Check local storage or perform authentication check here
+    const checkAuth = async () => {
+      // Simulated check
+      const authStatus = localStorage.getItem('isAuthenticated') === 'true';
+      setIsAuthenticated(authStatus);
+    };
+
+    checkAuth();
+  }, []);
+
+  const login = () => {
     setIsAuthenticated(true);
-    navigate('/'); // Redirect to home or dashboard
+    localStorage.setItem('isAuthenticated', 'true');
   };
 
   const logout = () => {
     setIsAuthenticated(false);
-    navigate('/login'); // Redirect to login page
+    localStorage.removeItem('isAuthenticated');
   };
 
   return (
@@ -25,6 +35,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);

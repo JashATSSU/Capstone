@@ -1,7 +1,7 @@
 // src/components/FileUploader.js
 
 import React, { useState } from 'react';
-import s3 from '../utils/s3Client'; // Import the S3 client
+import s3 from '../utils/s3Client'; // Correct relative path
 
 const FileUploader = () => {
     const [file, setFile] = useState(null);

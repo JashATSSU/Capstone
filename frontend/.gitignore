@@ -1,0 +1,52 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+jspm_packages/
+bower_components/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# dotenv environment variables files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Frontend and Backend specific .env files
+frontend/.env
+backend/.env
+
+# Build directories
+build/
+dist/
+
+# Ignore .DS_Store (macOS)
+.DS_Store
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Generated files
+coverage/
+*.log
+*.gz
+
+# Ignore config files for local development
+*.local
